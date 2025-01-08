@@ -97,6 +97,10 @@ body {
     color: $color-background-beige;
   }
 
+  &__title--completed {
+    text-decoration: line-through;
+  }
+
   &__button-box {
     margin-left: auto;
   }
