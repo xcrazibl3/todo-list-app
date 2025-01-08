@@ -32,7 +32,9 @@ function App() {
   function handleCompleteTask(taskTitle) {
     setTasks((tasks) =>
       tasks.map((task) =>
-        task.title === taskTitle ? { ...task, completed: true } : task
+        task.title === taskTitle
+          ? { ...task, completed: !task.completed }
+          : task
       )
     );
   }
@@ -112,6 +114,9 @@ function TasksContainer({
   onCancelRename,
   onCompleteRename,
 }) {
+  const tasksSorted = tasks
+    .slice()
+    .sort((a, b) => Number(a.completed) - Number(b.completed));
   //if no tasks
   if (!tasks.length)
     return (
@@ -127,7 +132,7 @@ function TasksContainer({
     <ul className="tasks">
       <h2 className="tasks__title">Tasks</h2>
       <div className="tasks__container">
-        {tasks.map((task) => (
+        {tasksSorted.map((task) => (
           <Task
             setNewTitle={setNewTitle}
             newTitle={newTitle}
@@ -178,7 +183,7 @@ function Task({
   //else
   if (renameTitle !== task.title)
     return (
-      <li className="task">
+      <li className={`task ${task.completed ? "task--completed" : ""}`}>
         <h3
           className={`task__title ${
             task.completed ? "task__title--completed" : ""

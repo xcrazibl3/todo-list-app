@@ -57,6 +57,7 @@ body {
   margin: 0 auto;
   background-color: $color-background-gray;
   padding: 4rem 8rem;
+  min-height: 100vh;
 }
 
 .header {
@@ -74,6 +75,7 @@ body {
 .tasks {
   display: flex;
   flex-direction: column;
+  margin: auto 0;
 
   &__title {
     font-size: 2rem;
@@ -91,6 +93,10 @@ body {
   padding: 1.1rem 2.5rem;
   background-color: $color-background-gray-light-2;
   border-bottom: 2px solid $color-background-gray;
+
+  &--completed {
+    background-color: $color-complete;
+  }
 
   &__title {
     font-size: 1.4rem;
@@ -131,7 +137,8 @@ body {
 .button-main-container {
   display: flex;
   justify-content: space-between;
-  margin-top: 4rem;
+  margin-top: auto;
+  margin-bottom: 2rem;
 }
 
 .button-main {
