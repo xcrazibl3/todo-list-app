@@ -104,6 +104,21 @@ body {
   &__button-box {
     margin-left: auto;
   }
+
+  &__input-field {
+    font-family: "Montseratt", Verdana, Geneva, Tahoma, sans-serif;
+    border-radius: 4px;
+    border: none;
+    height: 2.5rem;
+    flex: 1;
+    margin-right: 1.5rem;
+    text-align: center;
+    font-size: 1.5rem;
+
+    &:focus {
+      outline-color: $color-orange;
+    }
+  }
 }
 
 .button-secondary {
@@ -157,5 +172,18 @@ body {
 
   &__button-box {
     margin-left: auto;
+  }
+}
+
+.task-empty {
+  text-align: center;
+  background-color: $color-background-beige;
+  padding: 4rem 0;
+  border: none;
+  border-radius: 0.8rem;
+
+  &__message {
+    font-size: 1.8rem;
+    font-weight: 500;
   }
 }

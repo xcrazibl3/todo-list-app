@@ -5,13 +5,20 @@ function App() {
   const [tasks, setTasks] = useState(startTasks);
   const [isFormActive, setIsFormActive] = useState(false);
   const [newTask, setNewTask] = useState("");
+  const [renameTitle, setRenameTitle] = useState("");
+  const [newTitle, setNewTitle] = useState("");
 
   function handleOpenForm() {
     setIsFormActive(true);
   }
 
   function handleCloseForm() {
+    setNewTask("");
     setIsFormActive(false);
+  }
+
+  function handleClearAllTasks() {
+    setTasks([]);
   }
 
   function handleAddNewTask(newTask) {
@@ -30,10 +37,44 @@ function App() {
     );
   }
 
+  function handleRenameTask(taskTitle) {
+    setRenameTitle(taskTitle);
+    setNewTitle(taskTitle);
+    console.log(`You're currently renaming ${renameTitle}`);
+  }
+
+  function handleDeleteTask(taskTitle) {
+    setTasks((tasks) => tasks.filter((task) => task.title !== taskTitle));
+  }
+
+  function handleCancelRename() {
+    setRenameTitle("");
+  }
+
+  function handleCompleteRename(taskTitle) {
+    setTasks((tasks) =>
+      tasks.map((task) =>
+        task.title === taskTitle ? { ...task, title: newTitle } : task
+      )
+    );
+    setRenameTitle("");
+    setNewTitle("");
+  }
+
   return (
     <div className="container">
       <Header />
-      <TasksContainer onCompleteTask={handleCompleteTask} tasks={tasks} />
+      <TasksContainer
+        newTitle={newTitle}
+        setNewTitle={setNewTitle}
+        onCompleteTask={handleCompleteTask}
+        onDeleteTask={handleDeleteTask}
+        onRenameTask={handleRenameTask}
+        renameTitle={renameTitle}
+        tasks={tasks}
+        onCancelRename={handleCancelRename}
+        onCompleteRename={handleCompleteRename}
+      />
       {isFormActive && (
         <AddTaskForm
           newTask={newTask}
@@ -42,7 +83,10 @@ function App() {
           onCloseForm={handleCloseForm}
         />
       )}
-      <ButtonMainBox onAddTask={handleOpenForm} />
+      <ButtonMainBox
+        onAddTask={handleOpenForm}
+        onClearAllTasks={handleClearAllTasks}
+      />
     </div>
   );
 }
@@ -57,38 +101,104 @@ function Header() {
   );
 }
 
-function TasksContainer({ tasks, onCompleteTask }) {
+function TasksContainer({
+  tasks,
+  renameTitle,
+  onCompleteTask,
+  onDeleteTask,
+  onRenameTask,
+  newTitle,
+  setNewTitle,
+  onCancelRename,
+  onCompleteRename,
+}) {
+  //if no tasks
+  if (!tasks.length)
+    return (
+      <div className="task-empty">
+        <h2 className="task-empty__message">
+          You can add tasks to your Todo list!
+        </h2>
+      </div>
+    );
+
+  //else
   return (
-    <div className="tasks">
+    <ul className="tasks">
       <h2 className="tasks__title">Tasks</h2>
       <div className="tasks__container">
         {tasks.map((task) => (
-          <Task onCompleteTask={onCompleteTask} task={task} key={task.title} />
+          <Task
+            setNewTitle={setNewTitle}
+            newTitle={newTitle}
+            renameTitle={renameTitle}
+            onDeleteTask={onDeleteTask}
+            onCompleteTask={onCompleteTask}
+            onRenameTask={onRenameTask}
+            onCancelRename={onCancelRename}
+            onCompleteRename={onCompleteRename}
+            task={task}
+            key={task.title}
+          />
         ))}
       </div>
-    </div>
+    </ul>
   );
 }
 
-function Task({ task, onCompleteTask }) {
-  return (
-    <div className="task">
-      <h3
-        className={`task__title ${
-          task.completed ? "task__title--completed" : ""
-        }`}
-      >
-        {task.title}
-      </h3>
-      <div className="task__button-box">
-        <ButtonSecondary onClick={() => onCompleteTask(task.title)}>
-          ✅
-        </ButtonSecondary>
-        <ButtonSecondary>📝</ButtonSecondary>
-        <ButtonSecondary>❌</ButtonSecondary>
+function Task({
+  renameTitle,
+  task,
+  onCompleteTask,
+  onDeleteTask,
+  onRenameTask,
+  newTitle,
+  setNewTitle,
+  onCancelRename,
+  onCompleteRename,
+}) {
+  //if rename clicked
+  if (renameTitle === task.title)
+    return (
+      <div className="task">
+        <input
+          className="task__input-field"
+          value={newTitle}
+          onChange={(e) => setNewTitle(e.target.value)}
+        />
+        <div className="task__button-box">
+          <ButtonSecondary onClick={() => onCompleteRename(task.title)}>
+            ✅
+          </ButtonSecondary>
+          <ButtonSecondary onClick={() => onCancelRename()}>❌</ButtonSecondary>
+        </div>
       </div>
-    </div>
-  );
+    );
+
+  //else
+  if (renameTitle !== task.title)
+    return (
+      <li className="task">
+        <h3
+          className={`task__title ${
+            task.completed ? "task__title--completed" : ""
+          }`}
+        >
+          {task.title}
+        </h3>
+        <div className="task__button-box">
+          <ButtonSecondary onClick={() => onCompleteTask(task.title)}>
+            ✅
+          </ButtonSecondary>
+          <ButtonSecondary onClick={() => onRenameTask(task.title)}>
+            📝
+          </ButtonSecondary>
+          <ButtonSecondary onClick={() => onDeleteTask(task.title)}>
+            ❌
+          </ButtonSecondary>
+        </div>
+      </li>
+    );
 }
 
 function ButtonSecondary({ children, onClick }) {
@@ -99,11 +209,11 @@ function ButtonSecondary({ children, onClick }) {
   );
 }
 
-function ButtonMainBox({ onAddTask }) {
+function ButtonMainBox({ onAddTask, onClearAllTasks }) {
   return (
     <div className="button-main-container">
       <ButtonMain onClick={onAddTask}>Add task</ButtonMain>
-      <ButtonMain>Clear all</ButtonMain>
+      <ButtonMain onClick={onClearAllTasks}>Clear all</ButtonMain>
     </div>
   );
 }
